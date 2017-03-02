@@ -6,9 +6,24 @@
   connection: local
   gather_facts: false
 
+  vars:
+    ec2_region: "us-east-1"
+    key_name: "eckey"
+    instance_type: "c3.2xlarge"
+    ami_image: "ami-0b33d91d"
+    security_group: "launch-wizard-2"
+    spot_price: 0.15
+    spot_wait_timeout: 600
+
+    # ebs_volumes:
+    #   - device_name: /dev/sdb
+    #     volume_size: 10
+    #     voume_type: gp2
+    #     snapshot: snap-fe8a3c04
+
   tasks:
     - name: Launch instance
-      local_action: ec2 region="us-east-1" key_name="eckey" instance_type="t2.micro" image="ami-0b33d91d" wait="yes" count="1" group="launch-wizard-2"
+      local_action: ec2 region="{{ ec2_region }}" key_name="{{ key_name }}" instance_type="{{ instance_type }}" image="{{ ami_image }}" wait="yes" count="1" group="{{ security_group }}" spot_price="{{spot_price | default(omit)}}" spot_wait_timeout="{{ spot_wait_timeout | default(omit)}}" volumes={{ ebs_volumes | default(omit)}}
       register: ec2
 
     - name: Add new instance to host group
