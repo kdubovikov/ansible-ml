@@ -13,4 +13,5 @@ This playbook spins up Amazon EC2 stop instance with preinstalled packages usefu
 
 ## References
 This playbook uses the following roles:
+
 1. https://github.com/robinandeer/ansible-miniconda (MIT License)
