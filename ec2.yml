@@ -1,0 +1,35 @@
+# The play operates on the local (Ansible control) machine.
+---
+- name: ML instance
+  hosts: localhost
+  remote_user: ec2-user
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Launch instance
+      local_action: ec2 region="us-east-1" key_name="eckey" instance_type="t2.micro" image="ami-0b33d91d" wait="yes" count="1" group="launch-wizard-2"
+      register: ec2
+
+    - name: Add new instance to host group
+      add_host:
+        hostname: "{{ item.public_ip }}"
+        groupname: launched
+      with_items: "{{ ec2.instances }}"
+
+    - name: Wait for SSH to come up
+      wait_for:
+        host: "{{ item.public_dns_name }}"
+        port: 22
+        delay: 60
+        timeout: 900
+        state: started
+      with_items: "{{ ec2.instances }}"
+
+- name: Configure instance(s)
+  hosts: launched
+  remote_user: ec2-user
+  gather_facts: True
+  roles:
+    - role: dev-env
+    - role: miniconda

@@ -1,0 +1,40 @@
+# vim:ft=ansible:
+---
+- name: Installing git
+  become: True
+  package: name=zsh state=latest
+
+- name: Installing git
+  become: True
+  package: name=git state=latest
+
+- name: Installing vim
+  become: True
+  package: name=vim state=latest
+
+- shell: vim +PluginInstall +qall
+
+- name: Cloning  oh-my-zsh
+  git:
+     repo=https://github.com/robbyrussell/oh-my-zsh
+     dest="~/.oh-my-zsh"
+
+- name: Cloning Vundle
+  git:
+    repo=https://github.com/gmarik/Vundle.vim.git
+    dest="~/.vim/bundle/Vundle.vim"
+
+- name: Creating new ~/.zshrc
+  copy:
+    src="~/.oh-my-zsh/templates/zshrc.zsh-template"
+    dest="~/.zshrc"
+
+- name: Determining username
+  action: shell whoami
+  register: whoami
+  sudo: False
+
+- name: Changing the default shell to zsh
+  action: user shell=/bin/zsh user={{whoami.stdout}}
+  # action: shell chsh ec2-user -s /bin/zsh
+  sudo: True
