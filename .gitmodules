@@ -1,0 +1,3 @@
+[submodule "roles/miniconda"]
+	path = roles/miniconda
+	url = https://github.com/robinandeer/ansible-miniconda.git
