@@ -1,5 +1,20 @@
 # vim:ft=ansible:
 ---
+- name: Installng build tools (gcc, make, ...)
+  become: True
+  apt: name={{item}} state=installed update_cache=yes
+  with_items:
+    - build-essential 
+    - gcc
+    - g++  
+    - make
+    - binutils
+      
+- name: install linux-headers
+  become: True
+  action: shell apt-get install -y linux-headers-$(uname -r)
+  ignore_errors: True
+
 - name: Installing git
   become: True
   package: name=zsh state=latest

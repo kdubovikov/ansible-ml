@@ -1,0 +1,9 @@
+---
+- name: Copy and extract cudnn archive
+  unarchive: src={{ cuddnn_archive }} dest=/tmp
+
+- name: Copy cdnn.h file into cuda include dir
+  shell: cp /tmp/cuda/include/cudnn.h /usr/local/cuda/include/
+
+- name: Copy libcudnn* files into cuda lib64 dir
+  shell: cp /tmp/cuda/lib64/* /usr/local/cuda/lib64/

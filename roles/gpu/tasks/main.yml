@@ -1,0 +1,5 @@
+---
+- { include: driver.yml, tags: driver }
+- { include: cuda.yml, tags: cuda }
+- { include: cudnn.yml, tags: cudnn }
+- { include: optimize.yml, tags: optimize }

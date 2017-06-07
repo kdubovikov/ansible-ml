@@ -1,0 +1,19 @@
+# The play operates on the local (Ansible control) machine.
+---
+- hosts: type_g2_2xlarge
+  gather_facts: False
+  remote_user: ubuntu 
+  become: yes
+  tasks:
+    - name: install python 2
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+
+- name: Configure instance(s)
+  hosts: type_g2_2xlarge
+  remote_user: ubuntu 
+  gather_facts: True 
+
+  roles:
+    - role: dev-env
+    - role: miniconda
+    - { role: gpu, become: yes, cuddnn_archive: "~/Downloads/cudnn-8.0-linux-x64-v6.0.tar" } 

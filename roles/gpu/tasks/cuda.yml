@@ -1,0 +1,38 @@
+---
+- name: Download latest CUDA deb packages
+  get_url: url={{ cuda_deb }} dest=/tmp/cuda.deb
+
+- name: Add CUDA deb
+  shell: dpkg -i /tmp/cuda.deb
+
+- name: Update packages
+  apt: update_cache=yes
+
+- name: Install kernel sources package
+  apt: name=linux-source state=present
+
+- name: Install cuda package
+  apt: name=cuda state=present
+
+- name: Adding cuda bin to PATH
+  lineinfile: dest=~/.bashrc line="export PATH=$PATH:/usr/local/cuda/bin"
+  become: false
+
+- name: Adding cuda lib64 to LD_LIBRARY_PATH
+  lineinfile: dest=~/.bashrc line="export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64"
+  become: false
+
+- name: Adding cuda root to CUDA_ROOT
+  lineinfile: dest=~/.bashrc line="export CUDA_ROOT=/usr/local/cuda"
+  become: false
+
+- name: Restart server
+  shell: sleep 2 && /sbin/shutdown -r now
+  async: 1
+  poll: 0
+  ignore_errors: true
+
+- name: Wait for server to restart
+  local_action:
+    module: wait_for host={{ inventory_hostname }} delay=30 timeout=120 state=started
+  become: false
